@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CellStart - Unlock Your Cellular Potential</title>
+    
+    <style>
+        /* ========================================
+        --- 1. Global Styles & Variables ---
+        ========================================
+        */
+        :root {
+            --header-font-primary: 'Poppins', 'Helvetica', sans-serif;
+            --header-font-secondary: 'Cabin', 'Helvetica', sans-serif;
+            --body-font: 'Source Sans Pro', 'Arial', sans-serif;
+            
+            /* Light Mode (Default) */
+            --bg-color: #ffffff;
+            --bg-secondary-color: #f8f9fa;
+            --bg-accent-color: #f0f8ff;
+            --text-header-color: #002f5c;
+            --text-body-color: #0057a6;
+            --text-light-color: #ffffff;
+            --accent-color: #007bff;
+            --border-color: #dee2e6;
+            --star-color: #FFD700;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0a192f;
+            --bg-secondary-color: #112240;
+            --bg-accent-color: #0d2a4c;
+            --text-header-color: #ccd6f6;
+            --text-body-color: #8892b0;
+            --text-light-color: #0a192f;
+            --accent-color: #64ffda;
+            --border-color: #233554;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--body-font);
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-body-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container { width: 90%; max-width: 1100px; margin: 0 auto; padding: 5rem 1rem; }
+        .animated-section { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .animated-section.visible { opacity: 1; transform: translateY(0); }
+
+        h1, h2, h3, h4 { color: var(--text-header-color); line-height: 1.2; margin-bottom: 1rem; }
+        h1 { font-family: var(--header-font-primary); font-size: clamp(2.5rem, 5vw, 3.5rem); }
+        h2 { font-family: var(--header-font-secondary); font-size: clamp(2rem, 4vw, 2.5rem); text-align: center; }
+        h3 { font-family: var(--header-font-secondary); font-size: 1.5rem; }
+        p { margin-bottom: 1rem; max-width: 65ch; color: var(--text-body-color); }
+        .section-intro { text-align: center; margin-bottom: 3rem; }
+        .section-intro p { margin-left: auto; margin-right: auto; }
+
+        /* ========================================
+        --- 2. Header & Dark Mode Toggle ---
+        ========================================
+        */
+        .main-header { padding: 1rem 0; background: var(--bg-color); box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; }
+        .main-header .container { display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; }
+        .logo img { height: 40px; width: auto; display: block; }
+        .header-nav { display: flex; align-items: center; gap: 1.5rem; }
+        .cta-button {
+            display: inline-block; background-color: var(--accent-color); color: var(--text-light-color) !important;
+            padding: 10px 28px; border: none; border-radius: 50px; text-decoration: none;
+            font-family: var(--header-font-secondary); font-weight: bold; font-size: 1rem; cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .cta-button:hover { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        
+        .theme-switch-wrapper { display: flex; align-items: center; }
+        .theme-switch { display: inline-block; height: 24px; position: relative; width: 44px; }
+        .theme-switch input { display:none; }
+        .slider { background-color: #ccc; bottom: 0; cursor: pointer; left: 0; position: absolute; right: 0; top: 0; transition: .4s; }
+        .slider:before { background-color: #fff; bottom: 4px; content: ""; height: 16px; left: 4px; position: absolute; transition: .4s; width: 16px; }
+        input:checked + .slider { background-color: var(--accent-color); }
+        input:checked + .slider:before { transform: translateX(20px); }
+        .slider.round { border-radius: 34px; }
+        .slider.round:before { border-radius: 50%; }
+
+        #hero { background-color: var(--bg-accent-color); padding: 3rem 0; overflow: hidden; }
+        #hero .container { display: flex; align-items: center; gap: 2rem; }
+        .hero-content { flex: 1; padding-right: 2rem; }
+        .hero-image { flex: 1; text-align: center; }
+        .hero-image img { max-width: 60%; height: auto; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+
+        #how-it-works { background-color: var(--bg-secondary-color); }
+        .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; text-align: center; }
+        .step-icon { color: var(--accent-color); width: 60px; height: 60px; margin-bottom: 1rem; }
+
+        #metrics { background-color: var(--text-header-color); }
+        #metrics h2, #metrics p { color: var(--bg-color); }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; text-align: center; }
+        .metric-item .metric-number { font-family: var(--header-font-primary); font-size: 3.5rem; font-weight: bold; color: var(--accent-color); }
+        .metric-item .metric-label { font-size: 1.1rem; color: #ccd6f6; }
+
+        #nad-decline .section-intro { max-width: 700px; margin: 0 auto 3rem auto; }
+        .graph-wrapper { position: relative; max-width: 800px; margin: 2rem auto; }
+        .graph-container-svg { width: 100%; height: auto; overflow: visible; }
+        .graph-line-svg { fill: none; stroke: var(--accent-color); stroke-width: 4; stroke-dasharray: 1000; stroke-dashoffset: 1000; transition: stroke-dashoffset 2s ease-out; }
+        .graph-wrapper.visible .graph-line-svg { stroke-dashoffset: 0; }
+        .graph-area-svg { fill: url(#area-gradient); opacity: 0; transition: opacity 1s ease-in 1s; }
+        .graph-wrapper.visible .graph-area-svg { opacity: 1; }
+        .graph-point-svg { fill: var(--accent-color); stroke: var(--bg-color); stroke-width: 5; opacity: 0; transform: scale(0.5); transition: opacity 0.5s ease-out, transform 0.5s ease-out; }
+        .graph-wrapper.visible #point1 { opacity: 1; transform: scale(1); transition-delay: 0.5s; }
+        .graph-wrapper.visible #point2 { opacity: 1; transform: scale(1); transition-delay: 1s; }
+        .graph-wrapper.visible #point3 { opacity: 1; transform: scale(1); transition-delay: 1.5s; }
+        .graph-wrapper.visible #point4 { opacity: 1; transform: scale(1); transition-delay: 2s; }
+        .graph-point-svg:hover { transform: scale(1.5) !important; cursor: pointer; }
+        .interactive-point { position: absolute; width: 30px; height: 30px; border-radius: 50%; transform: translate(-50%, -50%); cursor: pointer; z-index: 10; }
+        .interactive-point .tooltip { visibility: hidden; opacity: 0; position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%); background-color: var(--text-header-color); color: var(--bg-color); padding: 5px 10px; border-radius: 5px; font-size: 0.9em; white-space: nowrap; transition: opacity 0.3s, visibility 0.3s; }
+        .interactive-point:hover .tooltip { visibility: visible; opacity: 1; }
+        #ipoint1 { top: 0%; left: 0%; } #ipoint2 { top: 25%; left: 33.3%; } #ipoint3 { top: 50%; left: 66.6%; } #ipoint4 { top: 65%; left: 100%; }
+        .axis-labels text { font-family: var(--body-font); font-size: 24px; fill: var(--text-body-color); }
+        
+
+        #lifestyle { background-color: var(--bg-secondary-color); }
+        .lifestyle-content { display: flex; align-items: center; gap: 3rem; }
+        .lifestyle-text { flex: 1; }
+        .lifestyle-image { flex: 1; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .lifestyle-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        
+        #advantage { background: var(--bg-color); }
+        .advantage-graph { width: 100%; max-width: 500px; margin: 3rem auto 0 auto; }
+        .bar-chart { display: flex; justify-content: space-around; align-items: flex-end; height: 300px; position: relative; border-bottom: 2px solid var(--border-color); }
+        .bar-chart::before { content: '100%'; position: absolute; left: -45px; top: 50%; transform: translateY(-50%); color: #999; font-size: 0.9em; }
+        .bar-wrapper { width: 35%; text-align: center; }
+        .bar { 
+            position: relative; 
+            transition: filter 0.3s ease, transform 1.5s ease-out; 
+            transform-origin: bottom; 
+            transform: scaleY(0);
+        }
+        #advantage.visible .bar { transform: scaleY(1); }
+        .bar:hover { filter: brightness(1.1); }
+        
+        /* --- FIX STARTS HERE --- */
+        /* Changed percentage height to pixel height based on the .bar-chart height (300px) */
+        .bar-1 { height: 150px; background-color: #87CEEB; } /* 300px * 50% = 150px */
+        .bar-2 { height: 255px; background-color: var(--text-body-color); transition-delay: 0.2s; } /* 300px * 85% = 255px */
+        /* --- FIX ENDS HERE --- */
+        
+        .bar .percent { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); font-family: var(--header-font-primary); font-weight: bold; color: var(--text-header-color); opacity: 0; transition: opacity 0.5s ease-in 1.5s; }
+        #advantage.visible .bar .percent { opacity: 1; }
+        .bar-label { margin-top: 0.75rem; font-size: 1rem; color: var(--text-body-color); }
+
+
+        #testimonials { background-color: var(--bg-secondary-color); }
+        .testimonial-container { position: relative; max-width: 700px; margin: auto; overflow: hidden; }
+        .testimonials-grid { display: flex; transition: transform 0.5s ease-in-out; }
+        .testimonial-card { min-width: 100%; background: var(--bg-color); padding: 2rem; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .testimonial-avatar { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--accent-color); margin-bottom: 1rem; object-fit: cover; }
+        .star-rating { display: flex; gap: 0.25rem; margin-bottom: 1rem; color: var(--star-color); }
+        .star-rating svg { width: 20px; height: 20px; }
+        .testimonial-text { font-style: italic; margin-bottom: 1.5rem; color: var(--text-body-color); flex-grow: 1; }
+        .testimonial-author { font-weight: bold; color: var(--text-header-color); }
+        .carousel-nav { position: absolute; top: 50%; width: 100%; display: flex; justify-content: space-between; transform: translateY(-50%); }
+        .carousel-btn { background-color: rgba(0,0,0,0.3); color: white; border: none; padding: 0.75rem; cursor: pointer; border-radius: 50%; z-index: 10; }
+        .carousel-btn:hover { background-color: rgba(0,0,0,0.6); }
+
+        #newsletter { background-color: var(--bg-accent-color); }
+        .newsletter-form { display: flex; justify-content: center; gap: 1rem; max-width: 600px; margin: 0 auto; }
+        .newsletter-input { flex-grow: 1; padding: 12px; border-radius: 50px; border: 1px solid var(--border-color); font-size: 1rem; background: var(--bg-color); color: var(--text-body-color); }
+        .newsletter-input:focus { outline: 2px solid var(--accent-color); }
+
+        @media (max-width: 900px) {
+            #hero .container, .lifestyle-content { flex-direction: column; text-align: center; }
+            .hero-content { padding-right: 0; order: 2; }
+            .hero-image, .lifestyle-text { order: 1; margin-bottom: 2rem; }
+            .hero-image img { max-width: 45%; }
+            .lifestyle-content { gap: 2rem; }
+            .lifestyle-text { order: 2; } .lifestyle-image { order: 1; width: 100%; }
+        }
+        @media (max-width: 600px) {
+            h1 { font-size: 2.2rem; } h2 { font-size: 1.8rem; }
+            .hero-image img { max-width: 60%; }
+            .bar-chart::before { display: none; }
+            .newsletter-form { flex-direction: column; }
+            .main-header .container { padding: 0 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <a href="#" class="logo" aria-label="CellStart Homepage">
+                <img src="logo.png" alt="CellStart Official Brand Logo">
+            </a>
+            <div class="header-nav">
+                <a href="#how-it-works" class="cta-button">Learn More</a>
+                <div class="theme-switch-wrapper">
+                    <label class="theme-switch" for="checkbox">
+                        <input type="checkbox" id="checkbox" />
+                        <div class="slider round"></div>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="animated-section">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Unlock Your Potential. Feel Vibrant Again.</h1>
+                    <p class="subtext">As we age, our NAD+ levels decline, impacting our cellular health and energy. ChronoNAD+ is designed to restore these levels, helping you feel more energized from the inside out.</p>
+                    <a href="#newsletter" class="cta-button">Get Early Access</a>
+                </div>
+                <div class="hero-image">
+                    <img src="product.png" alt="Bottle of CellStart ChronoNAD+ dietary supplement floating">
+                </div>
+            </div>
+        </section>
+
+        <section id="how-it-works" class="animated-section">
+            <div class="container">
+                <div class="section-intro">
+                    <h2>Simple, Powerful, Daily</h2>
+                    <p>Integrating ChronoNAD+ into your daily routine is seamless.</p>
+                </div>
+                <div class="steps-grid">
+                    <div class="step">
+                        <svg class="step-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1 6h2v6h-2v-6zm1 11.5c-.828 0-1.5-.672-1.5-1.5s.672-1.5 1.5-1.5 1.5.672 1.5 1.5-.672 1.5-1.5 1.5z"/></svg>
+                        <h3>One Capsule Daily</h3>
+                        <p>Take one capsule of ChronoNAD+ each morning with a glass of water.</p>
+                    </div>
+                    <div class="step">
+                        <svg class="step-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1c-6.338 0-12 4.226-12 10.007 0 2.05.738 4.063 2.047 5.625l-1.994 6.368 6.283-2.437c1.32.748 2.785 1.167 4.323 1.167 6.338 0 12-4.226 12-10.007-.001-5.78-5.662-10.006-12-10.006zm0 18.006c-1.462 0-2.88-.396-4.125-1.127l-4.501 1.751 1.45-4.625c-1.41-1.6-2.165-3.692-2.165-5.999 0-4.962 4.935-8.007 10-8.007s10 3.045 10 8.007-4.935 8.007-10 8.007z"/></svg>
+                        <h3>Fuel Your Cells</h3>
+                        <p>Our formula gets to work restoring NAD+ levels for improved cellular energy.</p>
+                    </div>
+                    <div class="step">
+                        <svg class="step-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22 11.086v-1.086h-1.086l-1.042-2.083-2.083-1.042v-1.086h-1.086l-2.083-1.042-1.042-2.083h-1.086v-1.086h-1.086l-1.042 2.083-2.083 1.042v1.086h-1.086l-2.083 1.042-1.042 2.083h-1.086v1.086h1.086l1.042 2.083 2.083 1.042v1.086h1.086l2.083 1.042 1.042 2.083h1.086v1.086h1.086l1.042-2.083 2.083-1.042v-1.086h1.086l2.083-1.042 1.042-2.083h1.086zm-10 2.914c-2.209 0-4-1.791-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4z"/></svg>
+                        <h3>Feel The Difference</h3>
+                        <p>Experience renewed vitality and feel your best, day in and day out.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="metrics" class="animated-section">
+            <div class="container">
+                <div class="section-intro">
+                    <h2>Backed by Results</h2>
+                    <p>Our formula is clinically-inspired and trusted by thousands for real, measurable results.</p>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-number" data-target="95">0</span>%
+                        <p class="metric-label">Reported Increased Energy</p>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-number" data-target="1.7">0</span>x
+                        <p class="metric-label">NAD+ Boost with Resveratrol</p>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-number" data-target="10000">0</span>+
+                        <p class="metric-label">Happy Customers</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="nad-decline" class="animated-section">
+            <div class="container">
+                <div class="section-intro">
+                    <h2>The Science of Cellular Energy</h2>
+                    <p>Understanding NAD+ is the first step to reclaiming your vitality. As we age, our natural levels drop significantly.</p>
+                </div>
+                <h3 style="text-align: center;">NAD+ Declines by Up to 65% Between Ages 30 and 70</h3>
+                <div class="graph-wrapper animated-section">
+                    <svg class="graph-container-svg" viewBox="0 0 800 430" preserveAspectRatio="xMidYMid meet" aria-label="A graph showing the decline of NAD+ levels from 100% in a person's 20s to about 35% in their 70s.">
+                        <defs><linearGradient id="area-gradient" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:rgba(173, 216, 230, 0.7)"/><stop offset="100%" style="stop-color:rgba(173, 216, 230, 0)" /></linearGradient></defs>
+                        <path class="graph-area-svg" d="M0,0 L0,400 L800,260 L800,0 Z" />
+                        <path class="graph-line-svg" d="M0,0 L266,100 L532,200 L800,260" />
+                        <circle id="point1" class="graph-point-svg" cx="0" cy="0" r="10" /><circle id="point2" class="graph-point-svg" cx="266" cy="100" r="10" /><circle id="point3" class="graph-point-svg" cx="532" cy="200" r="10" /><circle id="point4" class="graph-point-svg" cx="800" cy="260" r="10" />
+                        <g class="axis-labels">
+                            <text x="0" y="430" text-anchor="start">20s</text>
+                            <text x="266" y="430" text-anchor="middle">30s-40s</text>
+                            <text x="532" y="430" text-anchor="middle">50s-60s</text>
+                            <text x="800" y="430" text-anchor="end">70s+</text>
+                        </g>
+                    </svg>
+                    <div class="interactive-points">
+                        <div id="ipoint1" class="interactive-point" aria-label="Data point for age 20s at 100%"><div class="tooltip">Age 20s: 100%</div></div>
+                        <div id="ipoint2" class="interactive-point" aria-label="Data point for age 30s-40s"><div class="tooltip">Age 30s-40s</div></div>
+                        <div id="ipoint3" class="interactive-point" aria-label="Data point for age 50s-60s"><div class="tooltip">Age 50s-60s</div></div>
+                        <div id="ipoint4" class="interactive-point" aria-label="Data point for age 70s+"><div class="tooltip">Age 70s+</div></div>
+                    </div>
+                </div>
+                <p class="citation" style="text-align: center; margin-top: 1rem;">By middle age, our NAD+ levels can plummet to half of what they were in our youth. <br>Source: Massudi et al., PLoS ONE, 2012; Jinfiniti Health Report.</p>
+            </div>
+        </section>
+
+        <section id="lifestyle" class="animated-section">
+            <div class="container">
+                <div class="lifestyle-content">
+                    <div class="lifestyle-text">
+                        <h3>Live Vibrantly, at Any Age</h3>
+                        <p>Our mission is to empower you with the cellular health needed to pursue your passions, maintain your energy, and live a life without limits. ChronoNAD+ supports your wellness journey from the inside out.</p>
+                    </div>
+                    <div class="lifestyle-image">
+                        <img src="group.png" alt="A diverse group of friends laughing and enjoying a healthy outdoor meal together, representing a vibrant lifestyle.">
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="advantage" class="animated-section">
+            <div class="container">
+                <div class="section-intro">
+                    <h2>The 1.7x Advantage</h2>
+                    <p>Research shows that combining NAD+ with Resveratrol can boost NAD+ levels in our body up to 1.7x higher than using NAD+ alone.</p>
+                </div>
+                <div class="advantage-graph">
+                    <div class="bar-chart">
+                        <div class="bar-wrapper"><div class="bar bar-1"><span class="percent">100%</span></div><p class="bar-label">NAD+ Alone</p></div>
+                        <div class="bar-wrapper"><div class="bar bar-2"><span class="percent">~170%</span></div><p class="bar-label">NAD+ with Resveratrol</p></div>
+                    </div>
+                </div>
+                 <p class="citation" style="text-align: center; margin-top: 1rem;">Source: Jiang et al., Pharmacology Research & Perspectives, 2022</p>
+            </div>
+        </section>
+
+        <section id="testimonials" class="animated-section">
+            <div class="container">
+                <div class="section-intro">
+                    <h2>Join Our Thriving Community</h2>
+                    <p>See what our users are saying about ChronoNAD+.</p>
+                </div>
+                <div class="testimonial-container">
+                    <div class="testimonials-grid">
+                        <div class="testimonial-card">
+                            <img class="testimonial-avatar" src="fitnessEnthusiast.png" alt="A smiling man representing a fitness enthusiast.">
+                            <div class="star-rating" aria-label="5 out of 5 stars">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27l-5.18 2.73 1-5.77-4.17-4.07 5.8-.84L12 3l2.55 5.32 5.8.84-4.17 4.07 1 5.77z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27l-5.18 2.73 1-5.77-4.17-4.07 5.8-.84L12 3l2.55 5.32 5.8.84-4.17 4.07 1 5.77z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27l-5.18 2.73 1-5.77-4.17-4.07 5.8-.84L12 3l2.55 5.32 5.8.84-4.17 4.07 1 5.77z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27l-5.18 2.73 1-5.77-4.17-4.07 5.8-.84L12 3l2.55 5.32 5.8.84-4.17 4.07 1 5.77z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27l-5.18 2.73 1-5.77-4.17-4.07 5.8-.84L12 3l2.55 5.32 5.8.84-4.17 4.07 1 5.77z"/></svg>
+                            </div>
+                            <p class="testimonial-text">"I was skeptical at first, but after a month of taking ChronoNAD+, I feel like I have my energy back. It's been a game-changer for my daily routine and workouts."</p>
+                            <p class="testimonial-author">- Alex R. | Fitness Enthusiast</p>
+                        </div>
+                        <div class="testimonial-card">
+                            <img class="testimonial-avatar" src="normalUser.png"  alt="A smiling woman in her 50s, representing a satisfied older user.">
+                            <div class="star-rating" aria-label="5 out of 5 stars">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27l-5.18 2.73 1-5.77-4.17-4.07 5.8-.84L12 3l2.55 5.32 5.8.84-4.17 4.07 1 5.77z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27l-5.18 2.73 1-5.77-4.17-4.07 5.8-.84L12 3l2.55 5.32 5.8.84-4.17 4.07 1 5.77z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27l-5.18 2.73 1-5.77-4.17-4.07 5.8-.84L12 3l2.55 5.32 5.8.84-4.17 4.07 1 5.77z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27l-5.18 2.73 1-5.77-4.17-4.07 5.8-.84L12 3l2.55 5.32 5.8.84-4.17 4.07 1 5.77z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27l-5.18 2.73 1-5.77-4.17-4.07 5.8-.84L12 3l2.55 5.32 5.8.84-4.17 4.07 1 5.77z"/></svg>
+                            </div>
+                            <p class="testimonial-text">"As someone over 50, I'd accepted that feeling tired was normal. ChronoNAD+ proved me wrong. I'm more mentally clear and have the stamina to keep up with my grandkids."</p>
+                            <p class="testimonial-author">- Sarah P. | Verified User</p>
+                        </div>
+                        <div class="testimonial-card">
+                            <img class="testimonial-avatar" src="doctor.png" alt="A professional woman representing a wellness advocate.">
+                            <div class="star-rating" aria-label="5 out of 5 stars">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27l-5.18 2.73 1-5.77-4.17-4.07 5.8-.84L12 3l2.55 5.32 5.8.84-4.17 4.07 1 5.77z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27l-5.18 2.73 1-5.77-4.17-4.07 5.8-.84L12 3l2.55 5.32 5.8.84-4.17 4.07 1 5.77z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27l-5.18 2.73 1-5.77-4.17-4.07 5.8-.84L12 3l2.55 5.32 5.8.84-4.17 4.07 1 5.77z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27l-5.18 2.73 1-5.77-4.17-4.07 5.8-.84L12 3l2.55 5.32 5.8.84-4.17 4.07 1 5.77z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27l-5.18 2.73 1-5.77-4.17-4.07 5.8-.84L12 3l2.55 5.32 5.8.84-4.17 4.07 1 5.77z"/></svg>
+                            </div>
+                            <p class="testimonial-text">"The science is what convinced me to try it, and the results are what made me stay. This is a must-have for anyone serious about their long-term health and wellness."</p>
+                            <p class="testimonial-author">- Dr. Chen | Wellness Advocate</p>
+                        </div>
+                    </div>
+                    <div class="carousel-nav">
+                        <button class="carousel-btn" id="prevBtn" aria-label="Previous testimonial">&#10094;</button>
+                        <button class="carousel-btn" id="nextBtn" aria-label="Next testimonial">&#10095;</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="newsletter" class="animated-section">
+            <div class="container">
+                <div class="section-intro">
+                    <h2>Stay Ahead of the Science</h2>
+                    <p>Join our newsletter for the latest in cellular health, product updates, and exclusive offers.</p>
+                </div>
+                <form class="newsletter-form" onsubmit="return false;">
+                    <input type="email" class="newsletter-input" placeholder="Enter your email address" required aria-label="Email Address">
+                    <button type="submit" class="cta-button">Subscribe</button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <footer style="background:var(--text-header-color); color:var(--bg-color); text-align:center; padding: 2rem 1rem;">
+        <div class="container">
+            <p>&copy; 2025 CellStart & Dislapharm. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // --- DARK MODE TOGGLE ---
+            const themeToggle = document.getElementById('checkbox');
+            const currentTheme = localStorage.getItem('theme');
+
+            const applyTheme = (theme) => {
+                document.documentElement.setAttribute('data-theme', theme);
+                if (theme === 'dark') {
+                    themeToggle.checked = true;
+                } else {
+                    themeToggle.checked = false;
+                }
+            };
+
+            if (currentTheme) {
+                applyTheme(currentTheme);
+            } else {
+                applyTheme('light');
+            }
+
+            themeToggle.addEventListener('change', function() {
+                let theme = this.checked ? 'dark' : 'light';
+                localStorage.setItem('theme', theme);
+                applyTheme(theme);
+            });
+
+            // --- SCROLL ANIMATIONS ---
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.animated-section, .graph-wrapper').forEach(section => {
+                observer.observe(section);
+            });
+            
+            // --- ANIMATED COUNTERS ---
+            const metricsObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const counters = entry.target.querySelectorAll('.metric-number');
+                        counters.forEach(counter => {
+                            const target = +counter.getAttribute('data-target');
+                            const duration = 2000;
+                            const stepTime = 20;
+                            let current = 0;
+                            const isDecimal = target % 1 !== 0;
+                            const steps = duration / stepTime;
+                            const increment = target / steps;
+                            
+                            const timer = setInterval(() => {
+                                current += increment;
+                                if (current >= target) {
+                                    clearInterval(timer);
+                                    counter.textContent = isDecimal ? target.toFixed(1) : new Intl.NumberFormat().format(Math.ceil(target));
+                                } else {
+                                    counter.textContent = isDecimal ? current.toFixed(1) : new Intl.NumberFormat().format(Math.ceil(current));
+                                }
+                            }, stepTime);
+                        });
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            if (document.getElementById('metrics')) {
+                metricsObserver.observe(document.getElementById('metrics'));
+            }
+
+            // --- TESTIMONIAL CAROUSEL ---
+            const slides = document.querySelector('.testimonials-grid');
+            if (slides) {
+                const slideCount = slides.children.length;
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                let currentIndex = 0;
+                let autoSlideInterval;
+
+                function goToSlide(index) {
+                    if (index < 0) { index = slideCount - 1; }
+                    else if (index >= slideCount) { index = 0; }
+                    slides.style.transform = 'translateX(' + (-index * 100) + '%)';
+                    currentIndex = index;
+                }
+
+                function startAutoSlide() {
+                    stopAutoSlide();
+                    autoSlideInterval = setInterval(() => {
+                        goToSlide(currentIndex + 1);
+                    }, 7000);
+                }
+
+                function stopAutoSlide() {
+                    clearInterval(autoSlideInterval);
+                }
+
+                prevBtn.addEventListener('click', () => {
+                    goToSlide(currentIndex - 1);
+                    stopAutoSlide();
+                    startAutoSlide();
+                });
+
+                nextBtn.addEventListener('click', () => {
+                    goToSlide(currentIndex + 1);
+                    stopAutoSlide();
+                    startAutoSlide();
+                });
+                
+                startAutoSlide();
+            }
+        });
+    </script>
+</body>
+</html>
